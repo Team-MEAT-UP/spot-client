@@ -5,11 +5,13 @@ import Button from "@/shared/ui/Button";
 import PlainHeader from "@/shared/ui/PlainHeader";
 import { useEffect, useState } from "react";
 import { InputField } from "@/shared/ui";
+import { useNavigate } from "react-router-dom";
 
 export const NameStep = () => {
   const { name, setName, nextStep } = useFindStore();
   const { value, error, handleChange, validateValue, isValid } = useValidation(name, validateName);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,7 +39,7 @@ export const NameStep = () => {
     <div className="flex flex-col h-full">
       <div className="flex-1 px-4">
         <div className="flex flex-col gap-4">
-          <PlainHeader title="멤버 추가" url="/" />
+          <PlainHeader title="멤버 추가" onBack={() => navigate(-1)} />
           <p className="text-gray-90 text-lg font-semibold">
             멤버 추가를 위해
             <br />

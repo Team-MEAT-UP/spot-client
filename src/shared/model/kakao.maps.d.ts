@@ -62,6 +62,22 @@ declare global {
       }
 
       function load(callback: () => void): void;
+
+      namespace services {
+        const Status: {
+          OK: string;
+          ZERO_RESULT: string;
+          ERROR: string;
+        };
+
+        class Geocoder {
+          coord2Address(
+            longitude: number,
+            latitude: number,
+            callback: (result: any, status: string) => void
+          ): void;
+        }
+      }
     }
   }
 }

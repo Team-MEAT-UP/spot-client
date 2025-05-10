@@ -28,13 +28,14 @@ export const BottomSheetContent = () => {
 export const FixedButtons = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false); // 추후 로그인 상태인지 검증하는 로직 구현예정
+  const eventId = new URLSearchParams(window.location.search).get("eventId");
   const shareContent = {
     title: "님이 모임을 생성했어요",
     description: "",
     imageUrl: "https://meetup-client-silk.vercel.app/image/main.png",
     links: [
-      { label: "내 출발지 입력하기", url: "https://meetup-client-silk.vercel.app/find" },
-      { label: "우리 모임의 중간지점은?", url: "https://meetup-client-silk.vercel.app/mapView" },
+      { label: "내 출발지 입력", url: `https://meetup-client-silk.vercel.app/find?eventId=${eventId}` },
+      { label: "중간지점 보기", url: `https://meetup-client-silk.vercel.app/mapView?eventId=${eventId}` },
     ],
   };
 

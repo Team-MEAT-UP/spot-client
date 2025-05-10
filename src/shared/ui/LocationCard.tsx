@@ -1,5 +1,7 @@
+import { ReactNode } from "react";
+
 interface LocationCardProps {
-  name: string;
+  name: ReactNode;
   address: string;
   onClick?: () => void;
 }
