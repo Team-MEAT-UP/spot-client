@@ -1,6 +1,6 @@
 export const KakaoLogin = () => {
   const handleKakaoLogin = () => {
-    const kakaoAuthUrl = "http://211.188.57.205:8080/oauth2/authorization/kakao";
+    const kakaoAuthUrl = "https://api.pickspot.co.kr/oauth2/authorization/kakao";
     window.location.href = kakaoAuthUrl;
   };
 

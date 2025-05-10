@@ -3,6 +3,7 @@ import { Overlay } from "@/shared/ui/BottomSheet/Overlay";
 import Button from "@/shared/ui/Button";
 import { useState } from "react";
 import { CheckBox } from "./CheckBox";
+import { storeAgreement } from "../service";
 
 interface PolicyBottomSheetProps {
   onClose: () => void;
@@ -12,9 +13,12 @@ export const PolicyBottomSheet = ({ onClose }: PolicyBottomSheetProps) => {
   const [firstCheckBox, setFirstCheckBox] = useState(false);
   const [secondCheckBox, setSecondCheckBox] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (firstCheckBox) {
-      onClose();
+      const isSuccess = await storeAgreement(firstCheckBox, secondCheckBox);
+      if (isSuccess) {
+        onClose();
+      }
     } else {
       setFirstCheckBox(true);
       setSecondCheckBox(true);
