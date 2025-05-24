@@ -1,7 +1,7 @@
 import api from "@/shared/api/api";
 import { GetEventRouteResponse } from "@/shared/model";
 
-export const getEventInfo = async (eventId: string, startPointId?: string) => {
+export const getEventInfo = async (eventId: string, guestId?: string) => {
   const response = await api.get<{
     result: string;
     data: GetEventRouteResponse;
@@ -10,7 +10,7 @@ export const getEventInfo = async (eventId: string, startPointId?: string) => {
       message: string;
     };
   }>(`/events/${eventId}`, {
-    params: startPointId ? { startPointId } : {},
+    params: guestId ? { guestId } : {},
   });
 
   if (response.data.result === "SUCCESS") {

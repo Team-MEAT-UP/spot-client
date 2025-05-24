@@ -14,6 +14,7 @@ import LoadingSpinner from "@/shared/ui/LoadingSpinner";
 import { MapHeader } from "@/widgets/headers";
 import { AxiosError } from "axios";
 import { useEffect } from "react";
+import { setCookie } from "@/shared/utils";
 
 const MapViewPage = () => {
   const { data, isLoading, isError, error } = useEventRoutes();
@@ -26,6 +27,12 @@ const MapViewPage = () => {
   useEffect(() => {
     if (data) {
       setEventData(data);
+      // 현재 사용자의 routeResponse 찾기
+      const myRoute = data.routeResponse.find(route => route.isMe);
+      if (myRoute) {
+        // startPointId를 쿠키에 저장
+        setCookie("startPointId", myRoute.id, { path: "/", maxAge: 86400 });
+      }
     }
   }, [data, setEventData]);
 

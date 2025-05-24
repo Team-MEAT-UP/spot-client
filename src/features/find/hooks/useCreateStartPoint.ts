@@ -11,10 +11,11 @@ export const useCreateStartPoint = (eventIdParam: string | null) => {
   const { mutate: createEventMutate } = useMutation({
     mutationFn: createEvent,
     onSuccess: response => {
-      const { eventId, startPointId } = response.data;
+      const { eventId, guestId } = response.data;
 
-      setCookie("eventId", eventId, { path: "/", maxAge: 86400 });
-      setCookie("startPointId", startPointId, { path: "/", maxAge: 86400 });
+      if (!getCookie("guestId")) {
+        setCookie("guestId", guestId, { path: "/", maxAge: 86400 });
+      }
 
       // 페이지 이동
       navigate(`/mapview/${eventId}`);
@@ -28,8 +29,8 @@ export const useCreateStartPoint = (eventIdParam: string | null) => {
     mutationFn: ({ payload, eventId }: { payload: FormattedData; eventId: string }) => addMember(payload, eventId),
     onSuccess: response => {
       // 쿠키가 없을 때만 저장
-      if (!getCookie("startPointId")) {
-        setCookie("startPointId", response.data.startPointId, { path: "/", maxAge: 86400 });
+      if (!getCookie("guestId")) {
+        setCookie("guestId", response.data.guestId, { path: "/", maxAge: 86400 });
       }
       navigate(`/mapview/${eventIdParam}`);
     },
