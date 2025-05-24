@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { Chip } from "./Chip";
 import Pin from "@/assets/icon/pin.svg";
 import DefaultProfile from "@/assets/icon/default-profile.svg";
-import { UserEvents } from "../model";
+import { UserEventHistoryResponses } from "../model";
+import { formatDaysAgo } from "../utils";
 
 export const GroupCard = ({
   eventId,
@@ -11,8 +12,9 @@ export const GroupCard = ({
   participatedPeopleCount,
   userProfileImageUrls,
   eventMadeAgo,
+  eventHourAgo,
   isReviewed,
-}: UserEvents) => {
+}: UserEventHistoryResponses) => {
   const navigate = useNavigate();
 
   const maxToShow = 3;
@@ -25,6 +27,8 @@ export const GroupCard = ({
   const handleClick = () => {
     navigate(`/mapView/${eventId}`);
   };
+
+  const eventAgoText = eventMadeAgo === 0 ? `${eventHourAgo}시간 전` : formatDaysAgo(eventMadeAgo);
 
   return (
     <section className="flex flex-col px-5 pb-5 pt-4 gap-1 border-b border-b-gray-5">
@@ -62,7 +66,7 @@ export const GroupCard = ({
 
           <p className="text-gray-90">{participatedPeopleCount}명</p>
           <p className="font-semibold text-gray-40">·</p>
-          <p className="text-gray-40">{eventMadeAgo}일 전</p>
+          <p className="text-gray-40">{eventAgoText}</p>
         </div>
         {placeName && <Chip isComplete={isReviewed} id={eventId} />}
       </div>

@@ -1,17 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
-import { getUserEvents } from "../service";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { UserEvents } from "../model";
+import { getUserEvents } from "../service";
 
 export const useUserEvents = () => {
-  const {
-    data: userEvents,
-    isLoading: isEventsLoading,
-    isError: isEventsError,
-  } = useQuery<UserEvents[]>({
+  return useInfiniteQuery<UserEvents>({
     queryKey: ["userEvents"],
-    queryFn: getUserEvents,
-    retry: 2, // 실패 시 최대 두 번 재시도
-    staleTime: 1000 * 60 * 5, // 5분 동안 데이터 캐시 유지
+    queryFn: ({ pageParam }) => getUserEvents({ pageParam: pageParam as string | undefined }),
+    getNextPageParam: lastPage => (lastPage.hasNextPage ? lastPage.lastEventId : undefined),
+    initialPageParam: undefined,
   });
-  return { userEvents, isEventsLoading, isEventsError };
 };

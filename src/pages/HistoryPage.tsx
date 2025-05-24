@@ -3,16 +3,25 @@ import { Empty, Header, GroupCard, PolicyBottomSheet } from "@/features/history/
 import { useUserStore } from "@/shared/stores";
 import Button from "@/shared/ui/Button";
 import LoadingSpinner from "@/shared/ui/LoadingSpinner";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const HistoryPage = () => {
   const { data, isLoading, isError } = useUserInfo();
-  const { userEvents, isEventsLoading, isEventsError } = useUserEvents();
+  const {
+    data: userEvents,
+    isLoading: isEventsLoading,
+    isError: isEventsError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useUserEvents();
   const [isPolicy, setIsPolicy] = useState(false);
   const profileImageUrl = useUserStore(state => state.profileImageUrl);
-  const length = 1; // 임시 ui 구현을 위한 작업!
   const navigate = useNavigate();
+
+  const allUserEvents = userEvents?.pages.flatMap(page => page.userEventHistoryResponses) ?? [];
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const onClose = () => {
     setIsPolicy(false);
@@ -50,6 +59,20 @@ const HistoryPage = () => {
     }
   }, [data, navigate]);
 
+  useEffect(() => {
+    if (!scrollRef.current || !hasNextPage || isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        fetchNextPage();
+      }
+    });
+
+    observer.observe(scrollRef.current);
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
   if (isLoading || isEventsLoading)
     return (
       <div className="flex flex-col items-center justify-center gap-3 h-screen-dvh">
@@ -65,9 +88,12 @@ const HistoryPage = () => {
         <Header profileImg={profileImageUrl} />
         <span className="pt-3 pb-2 text-xl font-bold">나의 모임</span>
       </div>
-      {length > 0 ? (
+      {allUserEvents.length > 0 ? (
         <div className="flex flex-col overflow-y-scroll scrollbar-hidden mb-24">
-          {userEvents && userEvents.map(data => <GroupCard key={data.eventId} {...data} />)}
+          {allUserEvents.map(data => (
+            <GroupCard key={data.eventId} {...data} />
+          ))}
+          <div ref={scrollRef} className="h-1" />
         </div>
       ) : (
         <Empty />
