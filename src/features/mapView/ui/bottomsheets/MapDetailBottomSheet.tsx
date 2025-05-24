@@ -1,13 +1,16 @@
-import { useState } from "react";
 import { SnapBottomSheet } from "@/shared/ui";
 import { useEventStore } from "@/shared/stores";
 import { TransferType } from "../../model";
 import { CarDetail, FixedButton, Path, TransferDetail } from "./detailContents";
 
-export const MapDetailBottomSheet = () => {
+interface MapDetailBottomSheetProps {
+  type: TransferType;
+  setType: React.Dispatch<React.SetStateAction<"subway" | "car">>;
+}
+
+export const MapDetailBottomSheet = ({ type, setType }: MapDetailBottomSheetProps) => {
   const detailEventData = useEventStore(state => state.detailEventData);
   const eventData = useEventStore(state => state.eventData);
-  const [type, setType] = useState<TransferType>(detailEventData?.isTransit ? "subway" : "car");
 
   if (!detailEventData || !eventData) {
     return <div>Loading...</div>;
@@ -20,7 +23,7 @@ export const MapDetailBottomSheet = () => {
         <TransferDetail
           type={type}
           setType={setType}
-          averageDuration={type === "car" ? detailEventData.drivingRoute[0].duration : detailEventData.totalTime}
+          averageDuration={type === "car" ? detailEventData.driveTime : detailEventData.transitTime}
           startPoint={detailEventData.startName}
           endPoint={eventData.meetingPoint.endStationName}
           isMe={detailEventData.isMe}
@@ -34,9 +37,9 @@ export const MapDetailBottomSheet = () => {
             />
           ) : (
             <CarDetail
-              driveDistance={detailEventData.drivingRoute[0].distance}
-              toll={detailEventData.drivingRoute[0].toll}
-              taxiToll={detailEventData.drivingRoute[0].taxi}
+              driveDistance={detailEventData.drivingInfo.distance}
+              toll={detailEventData.drivingInfo.toll}
+              taxiToll={detailEventData.drivingInfo.taxi}
               parking={eventData.parkingLot}
             />
           )}

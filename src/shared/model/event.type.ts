@@ -26,11 +26,19 @@ export interface TransitRoute {
   };
 }
 
-export interface DrivingRoute {
+export interface DrivingInfo {
   taxi: number;
   toll: number;
   duration: number;
   distance: number;
+}
+
+export interface DrivingRoute {
+  name: string;
+  coordinates: {
+    x: string;
+    y: string;
+  }[];
 }
 
 export interface RouteResponse {
@@ -43,13 +51,19 @@ export interface RouteResponse {
   startLongitude: number;
   startLatitude: number;
   transitRoute: TransitRoute[];
+  transitTime: number;
+  driveTime: number;
+  drivingInfo: DrivingInfo;
   drivingRoute: DrivingRoute[];
   totalTime: number;
+  guestId: string;
 }
 
 export interface ParkingLot {
   name: string;
   distance: number;
+  latitude: number;
+  longitude: number;
 }
 
 export interface GetEventRouteResponse {

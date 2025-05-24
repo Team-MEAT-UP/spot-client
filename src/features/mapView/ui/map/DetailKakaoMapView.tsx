@@ -2,13 +2,19 @@ import { useEffect, useRef, useState } from "react";
 import { useEventStore } from "@/shared/stores";
 import { MeetingMarker } from "./MeetingMarker";
 import { MapMarker } from "./MapMarker";
+import { ParkingMarker } from "./ParkingMarker";
+import { TransferType } from "../../model";
 
 interface PathPoint {
   latitude: number;
   longitude: number;
 }
 
-export const DetailKakaoMapView = () => {
+interface DetailKakaoMapViewProps {
+  type: TransferType;
+}
+
+export const DetailKakaoMapView = ({ type }: DetailKakaoMapViewProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const eventData = useEventStore(state => state.eventData);
@@ -26,17 +32,31 @@ export const DetailKakaoMapView = () => {
     longitude: detailEventData.startLongitude,
   });
 
-  // transitRoute 순회하며 경유지 추가
-  detailEventData.transitRoute.forEach(route => {
-    if (route.passStopList) {
-      route.passStopList.stations.forEach(station => {
-        pathPoints.push({
-          latitude: parseFloat(station.y),
-          longitude: parseFloat(station.x),
+  if (type === "subway") {
+    // transitRoute 순회하며 경유지 추가
+    detailEventData.transitRoute.forEach(route => {
+      if (route.passStopList) {
+        route.passStopList.stations.forEach(station => {
+          pathPoints.push({
+            latitude: parseFloat(station.y),
+            longitude: parseFloat(station.x),
+          });
         });
-      });
-    }
-  });
+      }
+    });
+  } else {
+    // drivingRoute 순회하며 경유지 추가
+    detailEventData.drivingRoute.forEach(route => {
+      if (route.coordinates) {
+        route.coordinates.forEach(station => {
+          pathPoints.push({
+            latitude: parseFloat(station.y),
+            longitude: parseFloat(station.x),
+          });
+        });
+      }
+    });
+  }
 
   // 마지막 중간지점 마커 추가
   pathPoints.push({
@@ -102,7 +122,7 @@ export const DetailKakaoMapView = () => {
       script.onload = initializeMap;
       document.head.appendChild(script);
     }
-  }, []);
+  }, [type]);
 
   return (
     <div
@@ -130,6 +150,12 @@ export const DetailKakaoMapView = () => {
             profileImg={detailEventData.profileImage}
             name={detailEventData.nickname}
           />
+          {type === "car" && (
+            <ParkingMarker
+              map={map}
+              position={{ lat: eventData.parkingLot.latitude, lng: eventData.parkingLot.longitude }}
+            />
+          )}
         </>
       )}
     </div>
